@@ -1,6 +1,2 @@
-<<<<<<< HEAD
 vscott2
-=======
-vscott
 master
->>>>>>> master
