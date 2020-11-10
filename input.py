@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 
 def get_username(username):
 
@@ -55,3 +55,22 @@ def get_date(date_input):
             if current_date[0] < input_date[2]:
                 return True
     return False
+
+def get_time(time, date):
+    """
+    Validate time in this format HH:MM over 24h circle
+    """
+
+    input_time = time.split(":")
+
+    time = str(datetime.now()).split()
+    time = time[1].split(":")
+    print("time",time)
+    
+    if date = 
+        if time[0] >= input_time[0]:
+            if time[1] > input_time[1]:
+                return True
+
+    return True
+
