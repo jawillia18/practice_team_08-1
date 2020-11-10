@@ -72,5 +72,8 @@ def get_time(time, date):
             if time[1] > input_time[1]:
                 return True
 
+def get_email():
+    return True
+
     return True
 
