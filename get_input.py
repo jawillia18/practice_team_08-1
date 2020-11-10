@@ -67,14 +67,14 @@ def get_time(time, date):
     time = time[1].split(":")
     print("time",time)
     
-    if date = 
-        if time[0] >= input_time[0]:
-            if time[1] > input_time[1]:
-                return True
+    # if date == 
+    #     if time[0] >= input_time[0]:
+    #         if time[1] > input_time[1]:
+    #             return True
 
 def get_email(get_email):
     return True
 
-def get_password(get_password)
+def get_password(get_password):
     return True
 

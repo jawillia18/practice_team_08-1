@@ -18,6 +18,8 @@ try:
 except ImportError:
     flags = None
 
+'''TODO get code clinic token'''
+
 SCOPES = ["https://www.googleapis.com/auth/calendar"]
 store = file.Storage("storage.json")
 creds = store.get()

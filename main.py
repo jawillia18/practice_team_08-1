@@ -1,5 +1,6 @@
 import time
 import get_input
+import json
 # All accounts
 users = {
     "root": {
@@ -45,27 +46,43 @@ def login():
 
 # Register
 def register():
+    user_data = {}
+    with open("data_file.json","r") as read_file:
+        user_info = json.load(read_file)
+    while True:
+        email = input("User-email*: ")
+        if not get_input.get_email(email): # and email in user_info[user_data]
+            print("User-email can't be blank!!!")
+            continue
+        else:
+            user_data["email"] = str(email)
+            break
+
     while True:
         username = input("New username*: ")
         if not get_input.get_username(username):
             print("Username can't be blank!!!")
             continue
         else:
+            user_data["username"] = str(username)
             break
+
     while True:
         password = input("New password*: ")
         if not get_input.get_password(password):
             print("Password can't be blank!!!")
             continue
         else:
+            user_data["password"] = str(password)
             break
-    while True:
-        email = input("User-email*: ")
-        if not get_input.get_email(email):
-            print("User-email can't be blank!!!")
-            continue
-        else:
-            break
+
+    with open("user_data.json") as open_file:
+        data = json.load(open_file)
+        temp = data["user_data"]
+        temp.append(user_data)
+        with open("user_data.json", "w") as write_file:
+            json.dump(data, write_file, indent=4)
+ 
     print("Creating account...")
     users[username] = {}
     users[username]["password"] = password

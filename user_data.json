@@ -1,0 +1,19 @@
+{
+    "user_data": [
+        {
+            "email": "email@address",
+            "username": "username",
+            "password": "password"
+        },
+        {
+            "email": "joe@mail",
+            "username": "joe",
+            "password": "123456"
+        },
+        {
+            "email": "john@mail",
+            "username": "john",
+            "password": "123456"
+        }
+    ]
+}

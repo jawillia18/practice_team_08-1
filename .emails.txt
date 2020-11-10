@@ -1,0 +1,2 @@
+Email           |Username        |Password
+john@email      |john            |1234567
