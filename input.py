@@ -1,5 +1,4 @@
-from datetime import date
-from datetime import time
+import datetime
 
 def get_username(username):
 
@@ -24,23 +23,35 @@ def get_username(username):
     else:
         return False
 
-def get_date(date): 
+def get_date(date_input): 
     """
     Validate date input in this format DD/MM/YYYY 
     """
 
-    #input date
-    input_date = date.split("/")
+    #split input date
+    try:
+        input_date = date_input.split("/")
+    except:
+        return False
 
-    #current date
-    # current_time = str(date.today())
-    # print(current_time, 'CURRENT TIME')
-    # #current_date = current_date.split("-")
+    #check if input format is valid
+    try:
+        datetime.date(int(input_date[2]), int(input_date[1]), int(input_date[0]))
+    except:
+        return False
+      
 
-    # #month End date
-    # Ending_31
-    # Ending_30
-    # Ending_30
+    #split current date
+    current_date = str(datetime.date.today())
+    current_date = current_date.split("-")
+    print(current_date, 'CURRENT TIME', date_input, "Date input")
 
-    #check if months is valid
-    return Trues
+    #compare dates
+    if current_date[0] <= input_date[2]:
+        if current_date[1] <= input_date[1] :
+            if current_date[2] <= input_date[2]:
+                return True
+        if current_date[1] >= input_date[1]:
+            if current_date[0] < input_date[2]:
+                return True
+    return False
