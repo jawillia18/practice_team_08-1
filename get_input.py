@@ -72,8 +72,9 @@ def get_time(time, date):
             if time[1] > input_time[1]:
                 return True
 
-def get_email():
+def get_email(get_email):
     return True
 
+def get_password(get_password)
     return True
 
