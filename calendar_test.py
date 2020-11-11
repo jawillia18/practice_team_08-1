@@ -21,6 +21,8 @@ except ImportError:
 '''TODO get code clinic token'''
 
 SCOPES = ["https://www.googleapis.com/auth/calendar"]
+
+# storage.json stores user login
 store = file.Storage("storage.json")
 creds = store.get()
 if not creds or creds.invalid:
@@ -46,9 +48,9 @@ def add_event(summary, start_time, end_time, email):
     "summary": summary,
     "start": {"dateTime": start_time},
     "end":   {"dateTime": end_time},
-    "attendees": [email],
+    "attendees": ["mail@gmail.com"],
     }
-    e = CAL.events().insert(calendarId="primary",sendNotifications=True, body=EVENTS).execute()
+    e = CAL.events().insert(calendarId="c_if5tihbg7n7a5k5261np66o514@group.calendar.google.com",sendNotifications=True, body=EVENTS).execute()
 
     print('''*** %r event added:
         Start: %s
@@ -62,7 +64,7 @@ def display_event():
     elapsed = datetime.timedelta(days=7)
     then = (datetime.datetime.utcnow() + elapsed).isoformat() + 'Z'
 
-    events_result = CAL.events().list(calendarId='primary', timeMax=then, timeMin=now,
+    events_result = CAL.events().list(calendarId='c_if5tihbg7n7a5k5261np66o514@group.calendar.google.com', timeMax=then, timeMin=now,
                                             singleEvents=True,
                                             orderBy='startTime').execute()
     events = events_result.get('items', [])
@@ -76,7 +78,6 @@ def display_event():
 
 '''
 Deletes event by ID
-Will need to do more research on deleting specific events
 '''
 def cancel_event(eventID):
     CAL.events().delete(calendarId='primary', eventId=eventID).execute()
@@ -96,5 +97,14 @@ def show_id():
             break
 
 
-# add_event("These things", "2020-11-11T09:00:00+02:00", "2020-11-11T11:00:00+02:00", "roderick@mail")
+# add_event("Recursion", "2020-11-14T09:00:00+02:00", "2020-11-14T11:00:00+02:00", "roderick@mail")
 display_event()
+
+# creating calendar??
+# calendar = {
+#     "summary": "Code Clinics",
+#     "timeZone": "America/Los_Angeles"
+# }
+
+# created_calendar = CAL.calendars().insert(body=calendar).execute()
+# print(created_calendar['id'])
