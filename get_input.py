@@ -48,9 +48,6 @@ def get_date(date_input):
     current_date = str(datetime.date.today())
     current_date = current_date.split("-")
 
-    # print(current_date, "current date")
-    # print(input_date)
-
     #compare dates
     if current_date[0] <= input_date[2]:
         if current_date[1] <= input_date[1] :
@@ -86,7 +83,6 @@ def get_time(time_in, date):
     current_time = current_time.split(":")
     print("time now now", current_time)
     
-<<<<<<< HEAD
     #split input date
     try:
         input_date = date.split("/")
@@ -115,16 +111,14 @@ def get_time(time_in, date):
                         return False
                 else:
                     return False
+            else:
+                return False
+        else:
+            return False
     else:
         return True
     print("here too")
     return False
-=======
-    # if date == 
-    #     if time[0] >= input_time[0]:
-    #         if time[1] > input_time[1]:
-    #             return True
->>>>>>> 928fd927026a245119f09121c5ab0cd6ed64716c
 
 def get_email(get_email):
     return True
