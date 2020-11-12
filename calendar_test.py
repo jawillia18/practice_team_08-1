@@ -41,6 +41,11 @@ EVENT = {
 }
 
 
+def convert_to_RFC_datetime(year=1900, month=1, day=1, hour=0, minute=0):
+    dt = datetime.datetime(year, month, day, hour, minute, 0).isoformat() + 'Z'
+    return dt
+
+
 '''Adds event
 time needs to be string of format 2020-11-11T09:00:00+02:00'''
 def add_event(summary, start_time, end_time, email):
@@ -48,7 +53,7 @@ def add_event(summary, start_time, end_time, email):
     "summary": summary,
     "start": {"dateTime": start_time},
     "end":   {"dateTime": end_time},
-    "attendees": ["mail@gmail.com"],
+    "attendees": ["rsamdaan@student.wethinkcode.co.za"],
     }
     e = CAL.events().insert(calendarId="c_if5tihbg7n7a5k5261np66o514@group.calendar.google.com",sendNotifications=True, body=EVENTS).execute()
 
@@ -71,10 +76,9 @@ def display_event():
 
     for event in events:
             start = event['start'].get('dateTime', event['start'].get('date'))
-            print(start, event['summary'])
+            print(start, event['summary'], event["id"])
 
     # TODO add code to store data
-
 
 '''
 Deletes event by ID
@@ -89,7 +93,7 @@ def show_id():
     now = datetime.datetime.utcnow().isoformat() + 'Z'
 
     while True:
-        events = CAL.events().list(calendarId='primary',timeMin=now, pageToken=page_token).execute()
+        events = CAL.events().list(calendarId='c_if5tihbg7n7a5k5261np66o514@group.calendar.google.com',timeMin=now, pageToken=page_token).execute()
         for event in events['items']:
             print(event["summary"], event["id"])
         page_token = events.get('nextPageToken')
@@ -97,8 +101,12 @@ def show_id():
             break
 
 
-# add_event("Recursion", "2020-11-14T09:00:00+02:00", "2020-11-14T11:00:00+02:00", "roderick@mail")
+start_time = convert_to_RFC_datetime(2020, 11, 13, hour=11)
+end_time = convert_to_RFC_datetime(2020, 11, 13, hour=13)
+# add_event("Loops", start_time, end_time, "guy@mail")
 display_event()
+# show_id()
+
 
 # creating calendar??
 # calendar = {
@@ -108,3 +116,5 @@ display_event()
 
 # created_calendar = CAL.calendars().insert(body=calendar).execute()
 # print(created_calendar['id'])
+
+# print(convert_to_RFC_datetime())
