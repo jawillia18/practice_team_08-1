@@ -1,79 +1,11 @@
 import time
-import get_input
-# All accounts
-users = {
-    "root": {
-        "password": "gucci-mane",
-        "group": "admin",
-        "slots": []
-    }
-}
-
-# Form validation
-def validate(form):
-    if len(form) > 0:
-        return False
-    return True
-
-# Login authorization
-def loginauth(username, password):
-    if username in users:
-        if password == users[username]["password"]:
-            print("Login successful")
-            return True
-    return False
-
-# Login
-def login():
-    while True:
-        username = input("Username: ")
-        if not get_input.get_username(username):
-            print("Username can't be blank")
-        else:
-            break
-    while True:
-        password = input("Password: ")
-        if not get_input.get_password(password):
-            print("Password can't be blank")
-        else:
-            break
-
-    if loginauth(username, password):
-        return session(username)
-    else:
-        print("Invalid username or password")
-
-# Register
-def register():
-    while True:
-        username = input("New username*: ")
-        if not get_input.get_username(username):
-            print("Username can't be blank!!!")
-            continue
-        else:
-            break
-    while True:
-        password = input("New password*: ")
-        if not get_input.get_password(password):
-            print("Password can't be blank!!!")
-            continue
-        else:
-            break
-    while True:
-        email = input("User-email*: ")
-        if not get_input.get_email(email):
-            print("User-email can't be blank!!!")
-            continue
-        else:
-            break
-    print("Creating account...")
-    users[username] = {}
-    users[username]["password"] = password
-    users[username]["group"] = "user"
-    users[username]["slots"] = []
-    time.sleep(1)
-    print("Account has successfully been created")
-
+from datetime import datetime, timedelta
+from app_data import get_input
+import user_interface
+import cc_calendar
+# from user_data.user_storage import *
+# from user_data.encryption import encrypt_password
+# from user_data.json_handling import *
 
 def help_me():
     help1 = """
@@ -85,94 +17,111 @@ def help_me():
 
 def help_me2():
     help2 = """
-        add slots:  Add the slots NB: slots can't be duplicated
-        check slots:check the available slots
-        book slots: from the added slots book the available slot
-        exit:       Exit the program as it shutdown
+        add slots :  Add the slots NB: slots can't be duplicated
+        view slots:  check the available slots
+        book slots:  from the added slots book the available slot
+        exit:        Exit the program as it shutdown
     """
 
     return help2
 
 def add_slots(username):
+
+    #Assign Slot ID
+    slots = open("./app_data/slots.txt", "r")
+    slots_list = slots.readlines()
+    slots.close()
+    last = slots_list[-1]
+    last = last.split("-")
+    last = last[-1]
+    ID = int(last) + 1
+
+    # Add slots
+    topic = input("please add topic \n >")
     while True:
-        topic = input("Topic > ")
-        if not len(topic) > 0:
+        if get_input.get_topic(topic):
+            break
+        else:
             print("Topic can't be blank")
-            continue
-        else:
-            break
+            topic = input("please add topic \n >")
+    date = input("please add date (DD/MM/YYYY)\n")
     while True:
-        time1 = input("Time > ")
-        if not len(time1) > 0:
-            print("Time can't be blank")
-            continue
-        else:
+        if get_input.get_date(date):
             break
+        else:
+            date = input("please add date in this format (DD/MM/YYYY)\n")
+    time = input("please add time (HH:MM)\n")
     while True:
-        name = input("Username > ")
-        if not len(name) > 0:
-            print("Username can't be blank")
-            continue
-        else:
+        if get_input.get_time(time, date):
             break
-    while True:
-        status = input("Status > ")
-        if not len(status) > 0:
-            print("Status can't be blank")
-            continue
         else:
-            break
+            time = input("please add time in this format (HH:MM)\n")
+
+    status = "Available"
+
+    duration = input("duration")
+    date = date.split("/")
+    print(date)
+    #convert to google format
+    time = time.split(":")
+    Google_date_start = ""
+    Google_date_end = ""
+    Google_date_start = str(date[2]) + "-" + str(date[1]) + "-" + str(date[0]) + "T" + str(time[0]) + ":" +str(time[1]) + ":00+02:00"
+    Google_date_end =  str(date[2]) + "-" + str(date[1]) + "-" + str(date[0]) + "T"+ str(time[0]) + ":" +str(int(time[1]) + int(duration)) + ":00+02:00"
+    
+    # start_date = datetime.strptime(date + " " + time, '%d/%m/%y %H:%M')
+    # end_date = start_date + timedelta(minutes=90)
+
+    cc_calendar.add_slot(topic, Google_date_start, Google_date_end, "thing@mail")
+
+    # Write infor to file
+    slots = open("./app_data/slots.txt", "a+")
+    slots.write(f"{username}-{topic}-{date}-{time}-{status}-{str(ID)}\n")
+    slots.close()
     print("adding slot...")
-    users[username]["slots"].append(["Topic: " + topic, "Time: " + time1, "Status: " + status])
-    time.sleep(2)
     print("slot has been added successfully")
 
+
+def view_slots(option):
+    cc_calendar.display_slots()
+
+
+def book_slot():
+    view_slots("Available")
+    book_slot = input("Enter booking id of slot you want to book \n > ")
+    cc_calendar.book_slot(book_slot, "dude@mail")
+    print("slot has been booked successfully")
 
 # User session
 def session(username):
     print("Welcome to your account " + username)
-    print("Menu: check slots | add slots | book slots | delete slots | logout | help")
-    if users[username]["group"] == "admin":
-        print("")
+    print("Menu: view slots | add slot | book slot | logout | help\nmanage slots(not yet available)")
     while True:
+        print("What do you want to do next?")
         option = input(username + " > ")
         if option == "logout":
             print("Logging out...")
             break
-        elif option == "check slots":
-            print("Available slots:")
-            for i in users[username]["slots"]:
-                print(i)
-        elif option == "add slots":
-            print("function not available")
+        elif option == "view slots":
+            view_slots("all")
+        elif option == "add slot":
             add_slots(username)
-        elif option == "book slots":
-            print("function not available")
-        elif option == "delete slots":
-            print("function not available")
+        elif option == "book slot":
+            book_slot()
         elif option == "help":
             print(help_me2())
+        elif option == "logout" or option == "exit":
+            break
         else:
             print(option + " is not an option")
 
 # On start
-print("Welcome to the system. Please register or login.")
-print("Menu: register | login | help | exit")
-while True:
-    option = input("> ")
-    if option == "login":
-        login()
-    elif option == "register":
-        register()
-    elif option == "help":
-        print(help_me())
-    elif option == "exit":
-        break
-
-    else:
-        print(option + " is not an option")
-
-# On exit
+print("----- Welcome to code clinics --------")
+select = user_interface.main_menu()
+if select == 1:
+    if user_interface.create_new_user_menu():
+        print("redirecting to login page ...")
+Auth, username = user_interface.user_login_menu()        
+if Auth:
+    session(username)
 print("Shutting down...")
-time.sleep(1)
-
