@@ -75,7 +75,6 @@ def book_slot(eventID, email):
     updated_event = code_calendar.events().update(calendarId=CAL_ID, eventId=event['id'], sendNotifications=True, body=event).execute()
 
 
-
 def display_slots():
     now = datetime.datetime.utcnow().isoformat() + 'Z'
     elapsed = datetime.timedelta(days=7)
@@ -84,14 +83,18 @@ def display_slots():
     events_result = code_calendar.events().list(calendarId=CAL_ID, timeMax=then, timeMin=now,
                                             singleEvents=True,
                                             orderBy='startTime').execute()
+
     events = events_result.get('items', [])
+
+    with open("calendar.json", 'w') as calendar_out:
+        json.dump(events_result, calendar_out, indent=4)
 
     for event in events:
         # print(event)
         start = event['start'].get('dateTime', event['start'].get('date'))
         print(start, event['summary'], event["id"])
 
-
+# Delete event by ID
 def cancel_event(eventID):
     code_calendar.events().delete(calendarId=CAL_ID, eventId=eventID).execute()
 
@@ -100,9 +103,22 @@ def get_details(eventID):
     event = code_calendar.events().get(calendarId=CAL_ID, eventId=eventID).execute()
     # print(len(event["attendees"]))
     print(event["summary"])
-    print(event["start"])
+    print(event["start"][0]["dateTime"])
     # print(event["attendees"][0]["email"])
     print(event["attendees"])
+
+
+def get_calendar_details():
+    now = datetime.datetime.utcnow().isoformat() + 'Z'
+    elapsed = datetime.timedelta(days=7)
+    then = (datetime.datetime.utcnow() + elapsed).isoformat() + 'Z'
+
+    events_result = code_calendar.events().list(calendarId=CAL_ID, timeMax=then, timeMin=now,
+                                            singleEvents=True,
+                                            orderBy='startTime').execute()
+
+    with open("calendar.json", 'w') as calendar_out:
+        json.dump(events_result["items"], calendar_out, indent=4)
 
 
 def get_attendees(eventID):
@@ -116,6 +132,7 @@ def get_attendees(eventID):
 # end_time = convert_to_RFC_datetime(2020, 11, 20, hour=13)
 # add_slot("Loops", start_time, end_time, "guy@mail")
 # book_slot("5pvm7n3jb8r17ul2r7unfgot9s", "guy@mail")
-# display_slots()
+display_slots()
 # get_events()
-get_details("kv05pc876po491h90cpcdfa86k")
+# get_details("kv05pc876po491h90cpcdfa86k")
+# get_attendees("kv05pc876po491h90cpcdfa86k")

@@ -91,6 +91,7 @@ def book_slot():
     book_slot = input("Enter booking id of slot you want to book \n > ")
     cc_calendar.book_slot(book_slot, "dude@mail")
     print("slot has been booked successfully")
+    
 
 # User session
 def session(username):
