@@ -39,20 +39,6 @@ def convert_to_RFC_datetime(year=2020, month=1, day=1, hour=0, minute=0):
     return dt
 
 
-def get_events():
-    now = datetime.datetime.utcnow().isoformat() + 'Z'
-    elapsed = datetime.timedelta(days=7)
-    then = (datetime.datetime.utcnow() + elapsed).isoformat() + 'Z'
-
-    events_result = code_calendar.events().list(calendarId=CAL_ID, timeMax=then, timeMin=now,
-                                            singleEvents=True,
-                                            orderBy='startTime').execute()
-    
-    events = events_result.get("items")
-    with open("event_details.json", 'w') as outfile:
-        json.dump(events, outfile, indent=4)
-
-
 def add_slot(summary, start_time, end_time, email):
     slot_details = {
     "summary": summary,
@@ -93,6 +79,7 @@ def display_slots():
         # print(event)
         start = event['start'].get('dateTime', event['start'].get('date'))
         print(start, event['summary'], event["id"])
+
 
 # Delete event by ID
 def cancel_event(eventID):
