@@ -34,23 +34,13 @@ if not creds or not creds.valid:
 
 code_calendar = build("calendar", "v3", credentials=creds)
 
+
 def convert_to_RFC_datetime(year=2020, month=1, day=1, hour=0, minute=0):
     dt = datetime.datetime(year, month, day, hour, minute, 0).isoformat() + 'Z'
     return dt
 
 
-def get_events():
-    now = datetime.datetime.utcnow().isoformat() + 'Z'
-    elapsed = datetime.timedelta(days=7)
-    then = (datetime.datetime.utcnow() + elapsed).isoformat() + 'Z'
-
-    events_result = code_calendar.events().list(calendarId=CAL_ID, timeMax=then, timeMin=now,
-                                            singleEvents=True,
-                                            orderBy='startTime').execute()
-    
-    events = events_result.get("items")
-    with open("event_details.json", 'w') as outfile:
-        json.dump(events, outfile, indent=4)
+# def get_calendar():
 
 
 def add_slot(summary, start_time, end_time, email):
@@ -94,21 +84,13 @@ def display_slots():
         start = event['start'].get('dateTime', event['start'].get('date'))
         print(start, event['summary'], event["id"])
 
+
 # Delete event by ID
 def cancel_event(eventID):
     code_calendar.events().delete(calendarId=CAL_ID, eventId=eventID).execute()
 
 
-def get_details(eventID):
-    event = code_calendar.events().get(calendarId=CAL_ID, eventId=eventID).execute()
-    # print(len(event["attendees"]))
-    print(event["summary"])
-    print(event["start"][0]["dateTime"])
-    # print(event["attendees"][0]["email"])
-    print(event["attendees"])
-
-
-def get_calendar_details():
+def store_calendar_details():
     now = datetime.datetime.utcnow().isoformat() + 'Z'
     elapsed = datetime.timedelta(days=7)
     then = (datetime.datetime.utcnow() + elapsed).isoformat() + 'Z'
@@ -121,18 +103,21 @@ def get_calendar_details():
         json.dump(events_result["items"], calendar_out, indent=4)
 
 
+'''
+creates a list of attendees
+'''
 def get_attendees(eventID):
     event = code_calendar.events().get(calendarId=CAL_ID, eventId=eventID).execute()
-    if len(event["attendees"]) == 1:
-        return event["attendees"][0]["email"]
+    attendee_list = []
+    if len(event["attendees"]) == 0:
+        return None
+    for attendee in event["attendees"]:
+        attendee_list.append(attendee["email"])
+
+    return attendee_list
     
 
-
-# start_time = convert_to_RFC_datetime(2020, 11, 20, hour=11)
-# end_time = convert_to_RFC_datetime(2020, 11, 20, hour=13)
-# add_slot("Loops", start_time, end_time, "guy@mail")
-# book_slot("5pvm7n3jb8r17ul2r7unfgot9s", "guy@mail")
-display_slots()
-# get_events()
-# get_details("kv05pc876po491h90cpcdfa86k")
-# get_attendees("kv05pc876po491h90cpcdfa86k")
+'''
+gets and stores calendar details in a json file; updates if necessary; is called when program is run
+'''
+store_calendar_details()

@@ -1,3 +1,8 @@
+
+import sys
+import ticket
+import user_interface
+
 # ----------------------Isaya"s update-------------------
 
 def help():
@@ -13,7 +18,7 @@ valid commands:
 
     login:       Enter the registered username and password to access your account
 
-    add_slots :  Add the slots NB: slots can't be duplicated
+    add_slot :  Add the slots NB: slots can't be duplicated
 
     view_slots:  check the available slots
 
