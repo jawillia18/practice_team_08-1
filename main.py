@@ -82,20 +82,29 @@ def add_slots(username):
     print("slot has been added successfully")
 
 
-def view_slots(option):
+def view_slots():
     cc_calendar.display_slots()
 
 
 def book_slot():
-    view_slots("Available")
+    view_slots()
     book_slot = input("Enter booking id of slot you want to book \n > ")
+    
     cc_calendar.book_slot(book_slot, "dude@mail")
     print("slot has been booked successfully")
+
+
+def cancel_slot():
+    view_slots()
+    slot_id = input("Enter ID of slot you want to cancel\n > ")
+    cc_calendar.cancel_event(slot_id)
+    print("Slot has been successfully cancelled")
+
 
 # User session
 def session(username):
     print("Welcome to your account " + username)
-    print("Menu: view slots | add slot | book slot | logout | help\nmanage slots(not yet available)")
+    print("Menu: view slots | add slot | book slot | cancel slot | logout | help\nmanage slots(not yet available)")
     while True:
         print("What do you want to do next?")
         option = input(username + " > ")
@@ -103,11 +112,13 @@ def session(username):
             print("Logging out...")
             break
         elif option == "view slots":
-            view_slots("all")
+            view_slots()
         elif option == "add slot":
             add_slots(username)
         elif option == "book slot":
             book_slot()
+        elif option == "cancel slot":
+            cancel_slot()
         elif option == "help":
             print(help_me2())
         elif option == "logout" or option == "exit":
