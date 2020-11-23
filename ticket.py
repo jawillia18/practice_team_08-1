@@ -1,4 +1,5 @@
 import datetime
+import os
 
 
 # global var
@@ -68,9 +69,10 @@ def get_the_diff():
     if len(time_diff) == 4:
         if int(time_diff[0]) > 0 or int(time_diff[1]) > 30:
             print("Your last ticket expired, please login")
+            # if os.path.exists("token.pickle"):
+            #     os.remove("token.pickle")
             return False
         else:
-            # print("proceed with caution!")
             return True
 
     elif len(time_diff) > 4:

@@ -7,9 +7,9 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 import json
-import os.path
 
-SCOPES = ["https://www.googleapis.com/auth/calendar.events"]
+
+SCOPES = ["https://www.googleapis.com/auth/calendar"]
 
 CAL_ID = "c_if5tihbg7n7a5k5261np66o514@group.calendar.google.com"
 
@@ -52,7 +52,8 @@ def add_slot(summary, start_time, end_time, email):
     "summary": summary,
     "start": {"dateTime": start_time},
     "end":   {"dateTime": end_time},
-    "attendees": [{"email": email}],
+    "attendees": [{"email": email}, 
+                  {"email": "codeclinic@mail"}],
     }
     slot = code_calendar.events().insert(calendarId=CAL_ID,sendNotifications=True, body=slot_details).execute()
 
@@ -108,6 +109,9 @@ def store_calendar_details():
                                             singleEvents=True,
                                             orderBy='startTime').execute()
 
+    if events_result == []:
+        return
+
     if os.path.exists("calendar.json"):
         with open("calendar.json") as open_calendar:
             calendar_data = json.load(open_calendar)
@@ -129,9 +133,15 @@ def get_attendees(eventID):
         attendee_list.append(attendee["email"])
 
     return attendee_list
+
+
+def get_user_email():
+    calendar = code_calendar.calendars().get(calendarId='primary').execute()
+    return calendar["id"]
     
 
 '''
 Calls the function that stores calendar data; is called when program is run
 '''
 store_calendar_details()
+get_user_email()

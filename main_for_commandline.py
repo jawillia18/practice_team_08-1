@@ -2,6 +2,9 @@
 import sys
 import ticket
 import user_interface
+import cc_calendar
+import datetime
+import json
 
 # ----------------------Isaya"s update-------------------
 
@@ -35,17 +38,30 @@ basic = ["help", "login", "register"]
 def process_command(arg):
     valid_ticket = ticket.get_the_diff()
     if valid_ticket and arg not in basic:
+        # with open("calendar.json") as open_calendar:
+        #     calendar_data = json.load(open_calendar)
+
         # view_slots
         if arg == "view_slots":
-            view_slots("all")
+            cc_calendar.display_slots()
 
         # book availabe slots
         elif arg =="book_slots":
-            book_slot()
+            cc_calendar.display_slots()
+            event_id = in
+            cc_calendar.book_slot()
 
         # add a new slot / slots
         elif  arg == "add_slot":
-            add_slots("mzet")
+            summary = input("Add topic: ")
+            start_date = input("Add start date (DD/MM/YYYY): ")
+            start_time = input("Add start time (HH:MM): ")
+            start_time = datetime.datetime.strptime(start_date + " " + start_time, '%d/%m/%Y %H:%M')
+            end_time = start_time + datetime.timedelta(minutes=90)
+            email = cc_calendar.get_user_email()
+            start_time = str(start_time).replace(" ", "T")+"Z"
+            end_time = str(end_time).replace(" ", "T")+"Z"
+            cc_calendar.add_slot(summary, start_time, end_time, email)
 
         # logout of the current session and user account
         elif arg == "logout":
@@ -66,9 +82,9 @@ def process_command(arg):
         user_interface.create_new_user_menu()
 
 
-def one_session():
+def main():
     
-    if len(sys.argv) == 2:
+    if len(sys.argv) >= 2:
         arg = sys.argv[1].lower()
         if arg in clinics_valid_argvs:
             process_command(arg)
@@ -92,5 +108,5 @@ def one_session():
 
 
 if __name__ == "__main__":
-    one_session()
+    main()
     
