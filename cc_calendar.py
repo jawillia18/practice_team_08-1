@@ -7,6 +7,7 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 import json
+import os.path
 
 SCOPES = ["https://www.googleapis.com/auth/calendar.events"]
 
@@ -91,6 +92,9 @@ def cancel_event(eventID):
 
 
 def store_calendar_details():
+    '''
+    Creates calendar.json which stores the calendar information in py dictionary.
+    '''
     now = datetime.datetime.utcnow().isoformat() + 'Z'
     elapsed = datetime.timedelta(days=7)
     then = (datetime.datetime.utcnow() + elapsed).isoformat() + 'Z'
@@ -99,14 +103,19 @@ def store_calendar_details():
                                             singleEvents=True,
                                             orderBy='startTime').execute()
 
+    if os.path.exists("calendar.json"):
+        with open("calendar.json") as open_calendar:
+            calendar_data = json.load(open_calendar)
+        if calendar_data == events_result["items"]:
+            return
     with open("calendar.json", 'w') as calendar_out:
         json.dump(events_result["items"], calendar_out, indent=4)
 
 
-'''
-creates a list of attendees
-'''
 def get_attendees(eventID):
+    '''
+    creates a list of attendees
+    '''
     event = code_calendar.events().get(calendarId=CAL_ID, eventId=eventID).execute()
     attendee_list = []
     if len(event["attendees"]) == 0:
@@ -118,6 +127,6 @@ def get_attendees(eventID):
     
 
 '''
-gets and stores calendar details in a json file; updates if necessary; is called when program is run
+Calls the function that stores calendar data; is called when program is run
 '''
 store_calendar_details()
