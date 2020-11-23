@@ -45,6 +45,9 @@ def convert_to_RFC_datetime(year=2020, month=1, day=1, hour=0, minute=0):
 
 
 def add_slot(summary, start_time, end_time, email):
+    '''
+    Creates event on Google calendar
+    '''
     slot_details = {
     "summary": summary,
     "start": {"dateTime": start_time},
@@ -60,7 +63,9 @@ def add_slot(summary, start_time, end_time, email):
 
 
 def book_slot(eventID, email):
-    '''need to see if this replaces info or appends'''
+    '''
+    Books available slot by adding user email to created event
+    '''
     event = code_calendar.events().get(calendarId=CAL_ID, eventId=eventID).execute()
     event["attendees"].append({"email": email})
     updated_event = code_calendar.events().update(calendarId=CAL_ID, eventId=event['id'], sendNotifications=True, body=event).execute()
@@ -77,8 +82,8 @@ def display_slots():
 
     events = events_result.get('items', [])
 
-    with open("calendar.json", 'w') as calendar_out:
-        json.dump(events_result, calendar_out, indent=4)
+    # with open("calendar.json", 'w') as calendar_out:
+    #     json.dump(events_result, calendar_out, indent=4)
 
     for event in events:
         # print(event)
