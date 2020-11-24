@@ -83,18 +83,25 @@ def display_slots():
 
     events = events_result.get('items', [])
 
-    # with open("calendar.json", 'w') as calendar_out:
-    #     json.dump(events_result, calendar_out, indent=4)
-
     for event in events:
         # print(event)
         start = event['start'].get('dateTime', event['start'].get('date'))
+        start = start.replace("T", " ").replace("+02:00", "")
         print(start, event['summary'], event["id"])
 
 
 # Delete event by ID
-def cancel_event(eventID):
+def cancel_slot(eventID):
     code_calendar.events().delete(calendarId=CAL_ID, eventId=eventID).execute()
+
+
+def cancel_booking(eventID):
+    event = code_calendar.events().get(calendarId=CAL_ID, eventId=eventID).execute()
+    email = get_user_email()
+    for attendee in range(len(event["attendees"]) - 1):
+        if event["attendees"][attendee]["email"] == email:
+            event["attendees"].pop(attendee)
+    code_calendar.events().update(calendarId=CAL_ID, eventId=event['id'], body=event).execute()
 
 
 def store_calendar_details():
@@ -121,18 +128,18 @@ def store_calendar_details():
         json.dump(events_result["items"], calendar_out, indent=4)
 
 
-def get_attendees(eventID):
-    '''
-    creates a list of attendees
-    '''
-    event = code_calendar.events().get(calendarId=CAL_ID, eventId=eventID).execute()
-    attendee_list = []
-    if len(event["attendees"]) == 0:
-        return None
-    for attendee in event["attendees"]:
-        attendee_list.append(attendee["email"])
+# def get_attendees(eventID):
+#     '''
+#     creates a list of attendees
+#     '''
+#     event = code_calendar.events().get(calendarId=CAL_ID, eventId=eventID).execute()
+#     attendee_list = []
+#     if len(event["attendees"]) == 0:
+#         return None
+#     for attendee in event["attendees"]:
+#         attendee_list.append(attendee["email"])
 
-    return attendee_list
+#     return attendee_list
 
 
 def get_user_email():

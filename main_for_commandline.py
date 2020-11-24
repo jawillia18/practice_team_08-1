@@ -17,19 +17,23 @@ eg. cs8 view_slots
 
 valid commands:
 
-    register:    Enter the username of your Choice and Password which consist of six or more characters to register
+    register:       Enter the username of your Choice and Password which consist of six or more characters to register
 
-    login:       Enter the registered username and password to access your account
+    login:          Enter the registered username and password to access your account
 
-    add_slot :  Add the slots NB: slots can't be duplicated
+    add_slot :      Add the slots NB: slots can't be duplicated
 
-    view_slots:  check the available slots
+    view_slots:     Check the available slots
 
-    book_slots:  from the added slots book the available slot
+    book_slot:      From the added slots book the available slot
+
+    cancel_slot:    Cancel a slot
+
+    cancel_booking: Remove your booking from a slot
 
 """)
 
-clinics_valid_argvs = ["login", "register", "view_slots", "book_slot", "help", "logout", "add_slot"]
+clinics_valid_argvs = ["login", "register", "view_slots", "book_slot", "cancel_slot", "cancel_booking", "help", "logout", "add_slot"]
 
 
 basic = ["help", "login", "register"]
@@ -37,6 +41,7 @@ basic = ["help", "login", "register"]
 
 def process_command(arg):
     valid_ticket = ticket.get_the_diff()
+    user_email = cc_calendar.get_user_email()
     if valid_ticket and arg not in basic:
         # with open("calendar.json") as open_calendar:
         #     calendar_data = json.load(open_calendar)
@@ -46,10 +51,11 @@ def process_command(arg):
             cc_calendar.display_slots()
 
         # book availabe slots
-        elif arg =="book_slots":
+        elif arg =="book_slot":
             cc_calendar.display_slots()
-            event_id = in
-            cc_calendar.book_slot()
+            event_id = input("Enter slot ID: ")
+            cc_calendar.book_slot(event_id, "guy@mail")
+            print("Booking successfully added.")
 
         # add a new slot / slots
         elif  arg == "add_slot":
@@ -58,10 +64,24 @@ def process_command(arg):
             start_time = input("Add start time (HH:MM): ")
             start_time = datetime.datetime.strptime(start_date + " " + start_time, '%d/%m/%Y %H:%M')
             end_time = start_time + datetime.timedelta(minutes=90)
-            email = cc_calendar.get_user_email()
             start_time = str(start_time).replace(" ", "T")+"Z"
             end_time = str(end_time).replace(" ", "T")+"Z"
-            cc_calendar.add_slot(summary, start_time, end_time, email)
+            cc_calendar.add_slot(summary, start_time, end_time, user_email)
+            print("Slot successfully added.")
+
+        # cancels a slot
+        elif arg == "cancel_slot":
+            cc_calendar.display_slots()
+            slot_ID = input("Enter slot ID: ")
+            cc_calendar.cancel_slot(slot_ID)
+            print("Slot successfully removed.")
+
+        # cancels a booking
+        elif arg == "cancel_booking":
+            cc_calendar.display_slots()
+            slot_ID = input("Enter slot ID: ")
+            cc_calendar.cancel_booking(slot_ID)
+            print("Booking successfully removed.")
 
         # logout of the current session and user account
         elif arg == "logout":
@@ -80,6 +100,8 @@ def process_command(arg):
     # add a new user
     elif arg == "register":
         user_interface.create_new_user_menu()
+
+    cc_calendar.store_calendar_details()
 
 
 def main():
