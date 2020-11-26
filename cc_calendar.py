@@ -49,9 +49,13 @@ def add_slot(summary, start_time, email):
     '''
     Creates event on Google calendar
     '''
-    # end_time = start_time + datetime.timedelta(minutes=90)
-    # start_str = str(start_time).replace(" ", "T")+"Z"
-    # end_str = str(end_time).replace(" ", "T")+"Z"
+    end_time = start_time + datetime.timedelta(minutes=90)
+    start_str = str(start_time).replace(" ", "T")+"Z"
+    end_str = str(end_time).replace(" ", "T")+"Z"
+
+    if free_busy(start_str, end_str) == True:
+        print("Slot not available.")
+        return
 
     for i in range(3):
         end_time = start_time + datetime.timedelta(minutes=30)
@@ -148,18 +152,19 @@ def store_calendar_details():
         json.dump(events_result["items"], calendar_out, indent=4)
 
 
-# def get_attendees(eventID):
-#     '''
-#     creates a list of attendees
-#     '''
-#     event = code_calendar.events().get(calendarId=CAL_ID, eventId=eventID).execute()
-#     attendee_list = []
-#     if len(event["attendees"]) == 0:
-#         return None
-#     for attendee in event["attendees"]:
-#         attendee_list.append(attendee["email"])
-
-#     return attendee_list
+def free_busy(start_time, end_time):
+    body = {
+        "timeMin": start_time,
+        "timeMax": end_time,
+        "timeZone": "Africa/Johannesburg",
+        "items": [{"id": CAL_ID}]
+    }
+    eventsResult = code_calendar.freebusy().query(body=body).execute()
+    email = get_user_email()
+    if eventsResult["calendars"][CAL_ID]["busy"]:
+        return True
+    else:
+        return False
 
 
 def get_user_email():
@@ -170,5 +175,5 @@ def get_user_email():
 '''
 Calls the function that stores calendar data; is called when program is run
 '''
-store_calendar_details()
-get_user_email()
+# store_calendar_details()
+# get_user_email()

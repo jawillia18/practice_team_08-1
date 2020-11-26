@@ -54,8 +54,7 @@ def process_command(arg):
         elif arg =="book_slot":
             cc_calendar.display_slots()
             event_id = input("Enter slot ID: ")
-            cc_calendar.book_slot(event_id, "guy@mail")
-            print("Booking successfully added.")
+            cc_calendar.book_slot(event_id, user_email)
 
         # add a new slot / slots
         elif  arg == "add_slot":
@@ -64,7 +63,6 @@ def process_command(arg):
             start_time = input("Add start time (HH:MM): ")
             start_time = datetime.datetime.strptime(start_date + " " + start_time, '%d/%m/%Y %H:%M')
             cc_calendar.add_slot(summary, start_time, user_email)
-            print("Slot successfully added.")
 
         # cancels a slot
         elif arg == "cancel_slot":
@@ -77,7 +75,6 @@ def process_command(arg):
             cc_calendar.display_slots()
             slot_ID = input("Enter slot ID: ")
             cc_calendar.cancel_booking(slot_ID)
-            print("Booking successfully removed.")
 
         # logout of the current session and user account
         elif arg == "logout":
