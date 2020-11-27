@@ -41,7 +41,6 @@ basic = ["help", "login", "register"]
 
 def process_command(arg):
     valid_ticket = ticket.get_the_diff()
-    user_email = cc_calendar.get_user_email()
     if valid_ticket and arg not in basic:
         # with open("calendar.json") as open_calendar:
         #     calendar_data = json.load(open_calendar)
@@ -54,7 +53,7 @@ def process_command(arg):
         elif arg =="book_slot":
             cc_calendar.display_slots()
             event_id = input("Enter slot ID: ")
-            cc_calendar.book_slot(event_id, user_email)
+            cc_calendar.book_slot(event_id)
 
         # add a new slot / slots
         elif  arg == "add_slot":
@@ -62,7 +61,7 @@ def process_command(arg):
             start_date = input("Add start date (DD/MM/YYYY): ")
             start_time = input("Add start time (HH:MM): ")
             start_time = datetime.datetime.strptime(start_date + " " + start_time, '%d/%m/%Y %H:%M')
-            cc_calendar.add_slot(summary, start_time, user_email)
+            cc_calendar.add_slot(summary, start_time)
 
         # cancels a slot
         elif arg == "cancel_slot":
@@ -82,6 +81,9 @@ def process_command(arg):
 
             # add functions here!
 
+        cc_calendar.store_calendar_details()
+
+
     # provide help
     elif arg == "help":
         help()
@@ -89,12 +91,11 @@ def process_command(arg):
     # login to an existing account
     elif arg == "login":
         user_interface.user_login_menu()
+        cc_calendar.create_token()
 
     # add a new user
     elif arg == "register":
         user_interface.create_new_user_menu()
-
-    cc_calendar.store_calendar_details()
 
 
 def main():

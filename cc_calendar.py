@@ -17,24 +17,29 @@ CAL_ID = "c_if5tihbg7n7a5k5261np66o514@group.calendar.google.com"
 # created automatically when the authorization flow completes for the first
 # time.
 
+code_calendar = None
 creds = None
+
+def create_token():
+    global creds
+    # If there are no (valid) credentials available, let the user log in.
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(
+                'client_secret.json', SCOPES)
+            creds = flow.run_local_server(port=0)
+        # Save the credentials for the next run
+        with open('token.pickle', 'wb') as token:
+            pickle.dump(creds, token)
+
+    code_calendar = build("calendar", "v3", credentials=creds)
+
 if os.path.exists('token.pickle'):
     with open('token.pickle', 'rb') as token:
         creds = pickle.load(token)
-# If there are no (valid) credentials available, let the user log in.
-if not creds or not creds.valid:
-    if creds and creds.expired and creds.refresh_token:
-        creds.refresh(Request())
-    else:
-        flow = InstalledAppFlow.from_client_secrets_file(
-            'client_secret.json', SCOPES)
-        creds = flow.run_local_server(port=0)
-    # Save the credentials for the next run
-    with open('token.pickle', 'wb') as token:
-        pickle.dump(creds, token)
-
-
-code_calendar = build("calendar", "v3", credentials=creds)
+    code_calendar = build("calendar", "v3", credentials=creds)
 
 
 def convert_to_RFC_datetime(year=2020, month=1, day=1, hour=0, minute=0):
@@ -42,13 +47,11 @@ def convert_to_RFC_datetime(year=2020, month=1, day=1, hour=0, minute=0):
     return dt
 
 
-# def get_calendar():
-
-
-def add_slot(summary, start_time, email):
+def add_slot(summary, start_time):
     '''
     Creates event on Google calendar
     '''
+    email = get_user_email()
     end_time = start_time + datetime.timedelta(minutes=90)
     start_str = str(start_time).replace(" ", "T")+"Z"
     end_str = str(end_time).replace(" ", "T")+"Z"
@@ -79,10 +82,11 @@ def add_slot(summary, start_time, email):
             slot["start"]["dateTime"], slot["end"]["dateTime"]))
 
 
-def book_slot(eventID, email):
+def book_slot(eventID):
     '''
     Books available slot by adding user email to created event
     '''
+    email = get_user_email()
     event = code_calendar.events().get(calendarId=CAL_ID, eventId=eventID).execute()
     if len(event["attendees"]) == 2:
         event["attendees"].append({"email": email})
@@ -104,7 +108,7 @@ def display_slots():
         # print(event)
         start = event['start'].get('dateTime', event['start'].get('date'))
         start = start.replace("T", " ").replace("+02:00", "")
-        print(start, event['summary'], event["id"])
+        print(start, event['summary'], event["id"])#, event["creator"]["email"].replace("@student.wethinkcode.co.za", ""))
 
 
 # Delete event by ID
@@ -159,8 +163,10 @@ def free_busy(start_time, end_time):
         "timeZone": "Africa/Johannesburg",
         "items": [{"id": CAL_ID}]
     }
+
     eventsResult = code_calendar.freebusy().query(body=body).execute()
     email = get_user_email()
+    
     if eventsResult["calendars"][CAL_ID]["busy"]:
         return True
     else:
@@ -170,10 +176,3 @@ def free_busy(start_time, end_time):
 def get_user_email():
     calendar = code_calendar.calendars().get(calendarId='primary').execute()
     return calendar["id"]
-    
-
-'''
-Calls the function that stores calendar data; is called when program is run
-'''
-# store_calendar_details()
-# get_user_email()
