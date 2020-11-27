@@ -7,6 +7,7 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 import json
+import pytz
 
 
 SCOPES = ["https://www.googleapis.com/auth/calendar"]
@@ -34,7 +35,6 @@ def create_token():
         with open('token.pickle', 'wb') as token:
             pickle.dump(creds, token)
 
-    code_calendar = build("calendar", "v3", credentials=creds)
 
 if os.path.exists('token.pickle'):
     with open('token.pickle', 'rb') as token:
@@ -55,6 +55,7 @@ def add_slot(summary, start_time):
     end_time = start_time + datetime.timedelta(minutes=90)
     start_str = str(start_time).replace(" ", "T")+"Z"
     end_str = str(end_time).replace(" ", "T")+"Z"
+    the_start = start_str
 
     if free_busy(start_str, end_str) == True:
         print("Slot not available.")
@@ -79,7 +80,7 @@ def add_slot(summary, start_time):
     print('''*** %r event added:
         Start: %s
         End:   %s''' % (slot["summary"].encode("utf-8"),
-            slot["start"]["dateTime"], slot["end"]["dateTime"]))
+            the_start, end_str))
 
 
 def book_slot(eventID):
@@ -97,6 +98,7 @@ def display_slots():
     now = datetime.datetime.utcnow().isoformat() + 'Z'
     elapsed = datetime.timedelta(days=7)
     then = (datetime.datetime.utcnow() + elapsed).isoformat() + 'Z'
+    time_zone = pytz.timezone("Africa/Johannesburg")
 
     events_result = code_calendar.events().list(calendarId=CAL_ID, timeMax=then, timeMin=now,
                                             singleEvents=True,
